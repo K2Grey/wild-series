@@ -3,10 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" type="image/png" href="{{ asset('build/images/logo.png') }}">
+        {{ encore_entry_link_tags('app') }}
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+        <header>
+            {% include '_navbar.html.twig' %}
+        </header>
         {% block body %}{% endblock %}
+        {{ encore_entry_script_tags('app') }}
         {% block javascripts %}{% endblock %}
     </body>
 </html>
