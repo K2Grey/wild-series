@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -83,6 +84,44 @@ class ProgramController extends AbstractController
             'program' => $program,
             'season' => $season,
             'episodes' => $episodes,
+        ]);
+    }
+
+    /**
+     * @Route("/{programId<^[0-9]+$>}/seasons/{seasonId<^[0-9]+$>}/episodes/{episodeId<^[0-9]+$>}",
+     *     methods={"GET"}, name="episode_show")
+     * @ParamConverter("program", options={"mapping": {"programId": "id"}})
+     * @ParamConverter("season", options={"mapping": {"seasonId": "id"}})
+     * @ParamConverter("episode", options={"mapping": {"episodeId": "id"}})
+     * @param Program $program
+     * @param Season $season
+     * @param Episode $episode
+     * @return Response
+     */
+    public function showEpisode(Program $program, Season $season, Episode $episode): Response
+    {
+        if (!$program) {
+            throw $this->createNotFoundException(
+                'No program with id : ' . $program->getId() . ' found in program\'s table.'
+            );
+        }
+
+        if (!$season) {
+            throw $this->createNotFoundException(
+                'No season with id : ' . $season->getId() . ' found in season\'s table.'
+            );
+        }
+
+        if (!$episode) {
+            throw $this->createNotFoundException(
+                'No episode with id : ' . $episode->getId() . ' found in episode\'s table.'
+            );
+        }
+
+        return $this->render('program/episode_show.html.twig', [
+            'program' => $program,
+            'season' => $season,
+            'episode' => $episode,
         ]);
     }
 }
