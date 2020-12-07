@@ -40,13 +40,15 @@ class ProgramController extends AbstractController
      * Display the form or deal with it
      *
      * @Route("/new", name="new")
+     * @param Request $request
+     * @return Response
      */
     public function new(Request $request): Response
     {
         $program = new Program();
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($program);
             $entityManager->flush();

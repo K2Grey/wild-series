@@ -38,13 +38,15 @@ class CategoryController extends AbstractController
      * Display the form or deal with it
      *
      * @Route("/new", name="new")
+     * @param Request $request
+     * @return Response
      */
     public function new(Request $request): Response
     {
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($category);
             $entityManager->flush();
