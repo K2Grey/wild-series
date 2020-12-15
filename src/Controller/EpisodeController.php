@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Form\EpisodeType;
 use App\Repository\EpisodeRepository;
+use App\Service\Slugify;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,15 +32,18 @@ class EpisodeController extends AbstractController
     /**
      * @Route("/new", name="new", methods={"GET","POST"})
      * @param Request $request
+     * @param Slugify $slugify
      * @return Response
      */
-    public function new(Request $request): Response
+    public function new(Request $request, Slugify $slugify): Response
     {
         $episode = new Episode();
         $form = $this->createForm(EpisodeType::class, $episode);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugify->generate($episode->getTitle());
+            $episode->setSlug($slug);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($episode);
             $entityManager->flush();
@@ -53,7 +58,8 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @Route("/{id<^[0-9]+$>}", name="show", methods={"GET"})
+     * @Route("/{episodeSlug}", name="show", methods={"GET"})
+     * @ParamConverter("episode", options={"mapping": {"episodeSlug": "slug"}})
      * @param Episode $episode
      * @return Response
      */
@@ -65,7 +71,8 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @Route("/{id<^[0-9]+$>}/edit", name="edit", methods={"GET","POST"})
+     * @Route("/{episodeSlug}/edit", name="edit", methods={"GET","POST"})
+     * @ParamConverter("episode", options={"mapping": {"episodeSlug": "slug"}})
      * @param Request $request
      * @param Episode $episode
      * @return Response
@@ -88,7 +95,8 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @Route("/{id<^[0-9]+$>}", name="delete", methods={"DELETE"})
+     * @Route("/{episodeSlug}", name="delete", methods={"DELETE"})
+     * @ParamConverter("episode", options={"mapping": {"episodeSlug": "slug"}})
      * @param Request $request
      * @param Episode $episode
      * @return Response
