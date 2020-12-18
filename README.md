@@ -12,3 +12,5 @@
 [Symfony-16 Screencast part.1](https://drive.google.com/file/d/1wy7TMiLiM7gwPTkTdNfhQOOTj-s1c9vX/view?usp=sharing)  
 [Symfony-16 Screencast part.2](https://drive.google.com/file/d/1y4uPxE_b65LWW6w0TMVXacYYJ0LNg0vu/view?usp=sharing)  
 [Symfony-17 Screencast](https://drive.google.com/file/d/1E0gqIR9ggXwqfaXQzCZO2sFmGxxKhHBa/view?usp=sharing)  
+[Symfony-18 Screencast email new program](https://drive.google.com/file/d/1vuNxbNQj5N4aZ2cSC6gow92oeeHkDYbM/view?usp=sharing)  
+[Symfony-18 Screencast email new episode](https://drive.google.com/file/d/1L81UFDizMKLT06QNMgpx3Us9UBb-9Oov/view?usp=sharing)  
