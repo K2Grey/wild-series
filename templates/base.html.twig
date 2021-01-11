@@ -9,7 +9,7 @@
     </head>
     <body>
         <header>
-            {% include '_navbar.html.twig' %}
+            {{ render(controller('App\\Controller\\NavbarController::displayNavbar')) }}
         </header>
         {% block body %}{% endblock %}
         {{ encore_entry_script_tags('app') }}

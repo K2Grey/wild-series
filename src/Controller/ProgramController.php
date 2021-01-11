@@ -3,9 +3,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
+use App\Entity\User;
+use App\Form\CommentType;
 use App\Form\ProgramType;
 use App\Service\Slugify;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -130,16 +133,17 @@ class ProgramController extends AbstractController
 
     /**
      * @Route("/{programSlug}/seasons/{seasonId<^[0-9]+$>}/episodes/{episodeSlug}",
-     *     methods={"GET"}, name="episode_show")
+     *     methods={"GET", "POST"}, name="episode_show")
      * @ParamConverter("program", options={"mapping": {"programSlug": "slug"}})
      * @ParamConverter("season", options={"mapping": {"seasonId": "id"}})
      * @ParamConverter("episode", options={"mapping": {"episodeSlug": "slug"}})
      * @param Program $program
      * @param Season $season
      * @param Episode $episode
+     * @param Request $request
      * @return Response
      */
-    public function showEpisode(Program $program, Season $season, Episode $episode): Response
+    public function showEpisode(Program $program, Season $season, Episode $episode, Request $request): Response
     {
         if (!$program) {
             throw $this->createNotFoundException(
@@ -159,10 +163,25 @@ class ProgramController extends AbstractController
             );
         }
 
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $comment->setEpisode($episode);
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            /** @var User $user */
+            $user = $this->getUser();
+            $comment->setAuthor($user);
+            $entityManager->persist($comment);
+            $entityManager->flush();
+        }
+
         return $this->render('program/episode_show.html.twig', [
             'program' => $program,
             'season' => $season,
             'episode' => $episode,
+            'form' => $form->createView(),
         ]);
     }
 }

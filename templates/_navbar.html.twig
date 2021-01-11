@@ -1,13 +1,43 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="{{ path('app_index') }}">Wild Séries</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-link" href="/">Home</a>
-            <a class="nav-link" href="#">Features</a>
-            <a class="nav-link" href="#">Pricing</a>
-        </div>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Catégories
+                </a>
+                <div class="dropdown-menu dropdownMenu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="{{ path('category_index') }}">Toutes</a>
+                    {% for category in categories %}
+                        <a class="dropdown-item" href="{{ path('category_show', { categoryName: category.name }) }}">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Acteurs
+                </a>
+                <div class="dropdown-menu dropdownMenu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="{{ path('actor_index') }}">Tous</a>
+                    {% for actor in actors %}
+                        <a class="dropdown-item" href="{{ path("actor_show", { id: actor.id }) }}">{{ actor.name }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Mes Favoris</a>
+            </li>
+            <li class="nav-item">
+                {% if app.user %}
+                    {{ app.user.email }}
+                    <a class="nav-link" href="{{ path('app_logout') }}"> Se déconnecter</a>
+                {% else %}
+                    <a class="nav-link" href="{{ path('app_login') }}"> Se connecter</a>
+                {% endif %}
+            </li>
+        </ul>
     </div>
 </nav>
