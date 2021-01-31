@@ -32,6 +32,11 @@
                 {% endfor %}
             </ul>
         </div>
+        <div>
+            {% if is_granted("ROLE_ADMIN") or app.user == program.owner %}
+                <a href="{{ path('program_edit', { slug: program.slug }) }}">Editer</a>
+            {% endif %}
+        </div>
     </div>
 
     <a href="{{ path('program_index') }}">

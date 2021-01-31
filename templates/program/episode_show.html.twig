@@ -10,28 +10,31 @@
             <h1 class="mt-0">{{ program.title }} : Saison {{ season.number }}</h1>
             <h2 class="mt-0">Episode {{ episode.number }} : {{ episode.title }}</h2>
             <p>{{ episode.synopsis }}</p>
+            <div>
+                <h3>Commentaires :</h3>
+                {% for comment in episode.comments %}
+                    <div>
+                        <h4>{{ comment.author.username }}</h4>
+                        <p>{{ comment.comment }}</p>
+                        <p>Note : {{ comment.rate }}</p>
+                        {% if app.user and (is_granted("ROLE_ADMIN") or app.user.email == comment.author.email) %}
+                            {{ include('comment/_delete_form.html.twig') }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                {% if app.user %}
+                    <div>
+                        <h4>Ajouter un commentaire</h4>
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button class="btn btn-primary">{{ button_label|default('Publier') }}</button>
+                        {{ form_end(form) }}
+                    </div>
+                {% else %}
+                    <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour laisser un commentaire.</p>
+                {% endif %}
+            </div>
         </div>
-    </div>
-    <div>
-        <h3>Commentaires :</h3>
-        {% for comment in episode.comments %}
-            <div>
-                <h4>{{ comment.author.username }}</h4>
-                <p>{{ comment.comment }}</p>
-                <p>Note : {{ comment.rate }}</p>
-            </div>
-        {% endfor %}
-        {% if app.user %}
-            <div>
-                <h4>Ajouter un commentaire</h4>
-                {{ form_start(form) }}
-                {{ form_widget(form) }}
-                <button>{{ button_label|default('Publier') }}</button>
-                {{ form_end(form) }}
-            </div>
-            {% else %}
-                <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour laisser un commentaire.</p>
-        {% endif %}
     </div>
 
     <a href="{{ path("program_season_show", { programSlug: program.slug, seasonId: season.id }) }}">

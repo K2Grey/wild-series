@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Form\CommentType;
 use App\Form\ProgramType;
 use App\Service\Slugify;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/programs", name="program_")
@@ -60,7 +62,10 @@ class ProgramController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $slug = $slugify->generate($program->getTitle());
-            $program->setSlug($slug);
+            /** @var User $user */
+            $user = $this->getUser();
+            $program->setSlug($slug)
+                ->setOwner($user);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($program);
             $entityManager->flush();
@@ -97,6 +102,35 @@ class ProgramController extends AbstractController
         return $this->render('program/show.html.twig', [
             'program' => $program,
             'seasons' => $seasons,
+        ]);
+    }
+
+    /**
+     * @Route("/{slug}/edit", name="edit", methods={"GET", "POST"})
+     * @param Program $program
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param Slugify $slugify
+     * @return Response
+     */
+    public function edit(Program $program, Request $request, EntityManagerInterface $entityManager, Slugify $slugify): Response
+    {
+        if (!($this->getUser() == $program->getOwner())) {
+            throw new AccessDeniedException('Only the owner can edit the program!');
+        }
+
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugify->generate($program->getTitle());
+            $program->setSlug($slug);
+            $entityManager->persist($program);
+            $entityManager->flush();
+            return $this->redirectToRoute("program_show", ["slug" => $program->getSlug()]);
+        }
+        return $this->render('program/new.html.twig',[
+            "form" => $form->createView(),
         ]);
     }
 
